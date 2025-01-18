@@ -22,6 +22,7 @@ import queue
 import json
 import datetime
 from flask import Flask, render_template, request
+import regex as re
 
 # Global variables
 q = queue.Queue()
@@ -39,7 +40,7 @@ def main():
     load_dotenv()
 
 
-    """ # Start a thread which fetches RSS feeds.
+    # Start a thread which fetches RSS feeds.
     t0 = threading.Thread(target=rss_parser().fetch_feeds)
     t0.daemon = True
     t0.start()
@@ -48,7 +49,7 @@ def main():
     # Start a thread which updates the SQLite database with fresh RSS feeds.
     t1 = threading.Thread(target=SQLite_handler().update_SQLite)
     t1.daemon = True
-    t1.start() """
+    t1.start()
     
 
     # Since we're allowing the threads to exit once the main thread exists, ensure main thread does not exit.
@@ -89,7 +90,7 @@ class rss_parser():
     """
     def parse_and_send_feed(self, feed):
         for item in feed.entries:
-            new_entry = {"title": "null", "summary": "null", "link": "null", "fetch_datetime": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
+            new_entry = {"title": "null", "summary": "null", "link": "null", "fetch_datetime": datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")}
             for key in item:
                 if key in self.rss_parameters:
                     new_entry[key] = item[key]
@@ -138,6 +139,7 @@ class SQLite_handler():
     """
     def __init__(self):
         self.SQLite_update_frequency = int(os.getenv("SQLITE_UPDATE_FREQUENCY"))
+        self.html_parser = re.compile("<.*>")
 
 
     """
@@ -151,6 +153,7 @@ class SQLite_handler():
         while(True):
             entry = q.get()
             self.add_SQLite_entry(entry)
+            print(entry)
             time.sleep(self.SQLite_update_frequency)
     
 
@@ -159,6 +162,8 @@ class SQLite_handler():
             Since a row must be unique, only new entries are successfully added.
     """
     def add_SQLite_entry(self, entry: tuple):
+        if self.html_parser.match(entry["title"]) or self.html_parser.match(entry["summary"]):
+            return
         title = entry["title"]
         summary = entry["summary"]
         link = entry["link"]

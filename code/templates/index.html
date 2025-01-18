@@ -1,3 +1,24 @@
+<!--    Flask uses Jinja to make the templates
+        Ref: https://jinja.palletsprojects.com/en/stable/templates/ -->
+<!DOCTYPE html>
+<html>
+
+<body style="background-color:lightskyblue;">
+
 <ol>
-    <li> {{ results }} </li>
+    {% for result in results %}
+    <ul> 
+        <h3> {{ result[0]['title'] }} </h3> 
+        <a> {{result[0]['summary']}} </a>
+        <br></br>
+        <a href="{{result[0]['link']}}"> {{result[0]['link']}}</a>
+        <br></br>
+        <a> Fetched time: {{ result[0]['fetch_date'] }}</a>
+        <br></br>
+    </ul>
+    {% endfor %}
 </ol>
+
+</body>
+
+</html>
