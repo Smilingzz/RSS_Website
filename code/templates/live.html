@@ -1,0 +1,30 @@
+<!--    We're using some simple Angular and Javascript
+        that will allow the client to periodically
+        sent GET requests to the webserver,
+        returning any possibly new RSS updates. -->
+<!DOCTYPE html>
+<html>
+
+
+<body style="background-color:lightskyblue;">
+
+    <!-- Ref. in documentation. hXXps://flask[.]palletsprojects.com/en/stable/api/#flask.url_for -->
+    <script src = "{{ url_for('static', filename='live.js')}}"></script>
+
+<!--<ol>
+    {% for result in results %}
+    <ul> 
+        <h3> {{ result[0]['title'] }} </h3> 
+        <a> {{result[0]['summary']}} </a>
+        <br></br>
+        <a href="{{result[0]['link']}}"> {{result[0]['link']}}</a>
+        <br></br>
+        <a> Fetched time: {{ result[0]['fetch_date'] }}</a>
+        <br></br>
+    </ul>
+    {% endfor %}
+</ol> -->
+
+</body>
+
+</html>

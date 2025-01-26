@@ -153,7 +153,7 @@ class SQLite_handler():
         while(True):
             entry = q.get()
             self.add_SQLite_entry(entry)
-            print(entry)
+            #print(entry)
             time.sleep(self.SQLite_update_frequency)
     
 
