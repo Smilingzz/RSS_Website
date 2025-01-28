@@ -5,17 +5,16 @@ let live_rss_data = [];
 
 
 async function get_live_rss_data() {
-    const url = "127.0.0.1:8080/get_rss";
+    const url = "http://127.0.0.1:8080/get_rss";
     try {
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`Reponse status: ${response.status}`);
         }
+    } catch {
         console.log(response);
     }
-    catch {
-        console.log("Erroooor");
-    }
+
 };
 
 get_live_rss_data();

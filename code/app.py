@@ -54,14 +54,15 @@ def run_query(query, params=()):
 
 @app.route("/live")
 def live():
+    print("live")
     return render_template('live.html')
 
 
 @app.route("/get_rss")
-def live():
+def get_rss():
     global live_rss
-
-    return render_template('live.html', results=live_rss)
+    print("RSS!")
+    return render_template('index.html')
 
 
 @app.route("/")
