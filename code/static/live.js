@@ -11,10 +11,19 @@ async function get_live_rss_data() {
         if (!response.ok) {
             throw new Error(`Reponse status: ${response.status}`);
         }
+
+        // Ref in Docs: hXXps://developer[.]mozilla.org/en-US/docs/Web/API/Response
+        let json = await response.json();
+        live_rss_data = json
+        /* console.log("Data:");
+        console.log(json); */
     } catch {
-        console.log(response);
+        console.log("Error fetching data from server!");
     }
 
 };
 
-get_live_rss_data();
+/* while(true) {
+    await setTimeout(get_live_rss_data(), 10000);
+    console.log("Again...!");
+} */

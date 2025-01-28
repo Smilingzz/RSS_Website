@@ -8,7 +8,7 @@ from flask import Flask, render_template, request
 import sqlite3
 from dotenv import load_dotenv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 import time
 
@@ -54,15 +54,15 @@ def run_query(query, params=()):
 
 @app.route("/live")
 def live():
-    print("live")
     return render_template('live.html')
 
 
 @app.route("/get_rss")
 def get_rss():
     global live_rss
-    print("RSS!")
-    return render_template('index.html')
+    test = [{"title": "Test 1", "summary": "This is the first test!", "link": "null", "fetch_datetime": datetime.now().strftime("%Y/%m/%d %H:%M:%S")},
+     {"title": "Test 2", "summary": "This is the second test!", "link": "null", "fetch_datetime": (datetime.now() - timedelta(minutes=10)).strftime("%Y/%m/%d %H:%M:%S")}]
+    return test
 
 
 @app.route("/")
