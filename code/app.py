@@ -5,6 +5,7 @@ Date:   17/01/2025
         This class is responsible for the webservers backend logic.
 """
 from flask import Flask, render_template, request
+from flask_socketio import send, emit, SocketIO
 import sqlite3
 from dotenv import load_dotenv
 import os

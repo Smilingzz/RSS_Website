@@ -15,15 +15,13 @@ async function get_live_rss_data() {
         // Ref in Docs: hXXps://developer[.]mozilla.org/en-US/docs/Web/API/Response
         let json = await response.json();
         live_rss_data = json
-        /* console.log("Data:");
-        console.log(json); */
+        console.log("Data:");
+        console.log(json);
     } catch {
         console.log("Error fetching data from server!");
     }
 
 };
 
-/* while(true) {
-    await setTimeout(get_live_rss_data(), 10000);
-    console.log("Again...!");
-} */
+
+window.setInterval(get_live_rss_data, 60000);
