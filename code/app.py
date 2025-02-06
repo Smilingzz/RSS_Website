@@ -12,6 +12,7 @@ import os
 from datetime import datetime, timedelta
 import threading
 import time
+import json
 
 
 app = Flask(__name__)
@@ -19,6 +20,7 @@ app = Flask(__name__)
 # Great functionality that allows one to have configurations in a central place.
 load_dotenv
 max_results = int(os.getenv("FLASK_MAX_RESULTS"))
+rss_parameters = json.loads(os.getenv("RSS_PARAMETERS"))
 
 # This datastructure (list) holds the most recent RSS feeds. This is used to display 
 # "live" RSS data to clients.
@@ -91,6 +93,28 @@ def get_rss():
     return test
 
 """
+@method 
+
+@param  search: The search string that the user has entered.
+
+@return Returns the rendered HTML template.
+"""
+@app.route("/fetch_rss")
+def fetch_rss():
+    global rss_parameters
+    search = request.args.get("rss_search")
+    built_query_condition = ""
+    for parameter in rss_parameters:
+        if built_query_condition == "":
+            built_query_condition = f"WHERE {parameter} like '%{search}%' or "
+        else:
+            built_query_condition = built_query_condition + f"{parameter} like '%{search}%' or "
+    built_query_condition = built_query_condition[0:-3]
+    result = run_query(query=f"SELECT * FROM rss {built_query_condition}")
+
+    return render_template('index.html', results=parse_results(result))
+
+"""
 @method If a client requests the top URL, return the "home-page".
 
 @return Returns the template index.html
@@ -98,11 +122,10 @@ def get_rss():
 @app.route("/")
 def index():
     result = run_query(query=f"SELECT * FROM rss limit {max_results}")
-    parsed_results = parse_results(result=result)
     
     # Flask uses templates to render html.
     # Ref: https://flask.palletsprojects.com/en/stable/quickstart/#rendering-templates
-    return render_template('index.html', results=parsed_results)
+    return render_template('index.html', results=parse_results(result=result))
 
 # We want the webserver to know of all recent live RSS feeds, start this as a separate thread.
 t0 = threading.Thread(target=update_live_rss)

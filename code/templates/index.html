@@ -1,9 +1,18 @@
 <!--    Flask uses Jinja to make the templates
-        Ref: https://jinja.palletsprojects.com/en/stable/templates/ -->
+        Ref: https://jinja.palletsprojects.com/en/stable/templates/
+        
+        General HTML Docs
+        Ref: https://developer.mozilla.org/en-US/docs/Web/HTML-->
 <!DOCTYPE html>
 <html>
 
 <body style="background-color:lightskyblue;">
+
+<form action="/fetch_rss" method="get">
+    <input type="text" id="rss_get" name="rss_search" />
+    <button action="submit">"Search"</button>
+</form>
+
 
 <ol>
     {% for result in results %}
