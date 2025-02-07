@@ -21,6 +21,7 @@ app = Flask(__name__)
 load_dotenv
 max_results = int(os.getenv("FLASK_MAX_RESULTS"))
 rss_parameters = json.loads(os.getenv("RSS_PARAMETERS"))
+table_name = os.getenv("SQLITE_DB_TABLE_NAME")
 
 # This datastructure (list) holds the most recent RSS feeds. This is used to display 
 # "live" RSS data to clients.
@@ -31,12 +32,11 @@ live_rss = []
         RSS feeds from the SQLite database.
 """
 def update_live_rss():
-    global live_rss
-
+    global live_rss, table_name
     update_time = int(os.getenv("FLASK_LIVE_RSS_UPDATE_TIME"))
 
     while(True):
-        result = run_query(query=f"SELECT * FROM rss WHERE fetch_datetime > strftime('%Y/%m/%d %H:%M:%S', 'now', '-4 hour')")
+        result = run_query(query=f"SELECT * FROM {table_name} WHERE fetch_datetime > strftime('%Y/%m/%d %H:%M:%S', 'now', '-4 hour')")
         live_rss = parse_results(result=result)
 
         time.sleep(update_time)
@@ -64,7 +64,7 @@ def parse_results(result: list):
 @return Returns the query.
 """
 def run_query(query: str, params=()):
-    con = sqlite3.connect("rss.db")
+    con = sqlite3.connect(os.getenv("SQLITE_DB_NAME"))
     cursor = con.cursor()
     cursor.execute(query, params)
     rows = cursor.fetchall()
@@ -101,7 +101,7 @@ def get_rss():
 """
 @app.route("/fetch_rss")
 def fetch_rss():
-    global rss_parameters
+    global rss_parameters, table_name
     search = request.args.get("rss_search")
     built_query_condition = ""
     for parameter in rss_parameters:
@@ -110,7 +110,7 @@ def fetch_rss():
         else:
             built_query_condition = built_query_condition + f"{parameter} like '%{search}%' or "
     built_query_condition = built_query_condition[0:-3]
-    result = run_query(query=f"SELECT * FROM rss {built_query_condition}")
+    result = run_query(query=f"SELECT * FROM {table_name} {built_query_condition}")
 
     return render_template('index.html', results=parse_results(result))
 
@@ -121,7 +121,8 @@ def fetch_rss():
 """
 @app.route("/")
 def index():
-    result = run_query(query=f"SELECT * FROM rss limit {max_results}")
+    global table_name
+    result = run_query(query=f"SELECT * FROM {table_name} limit {max_results}")
     
     # Flask uses templates to render html.
     # Ref: https://flask.palletsprojects.com/en/stable/quickstart/#rendering-templates

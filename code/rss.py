@@ -90,7 +90,10 @@ class rss_parser():
     """
     def parse_and_send_feed(self, feed):
         for item in feed.entries:
-            new_entry = {"title": "null", "summary": "null", "link": "null", "fetch_datetime": datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")}
+            new_entry = {}
+            for key in self.rss_parameters:
+                new_entry[key] = "null"
+            new_entry["fetch_datetime"] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             for key in item:
                 if key in self.rss_parameters:
                     new_entry[key] = item[key]
@@ -140,6 +143,10 @@ class SQLite_handler():
     def __init__(self):
         self.SQLite_update_frequency = int(os.getenv("SQLITE_UPDATE_FREQUENCY"))
         self.html_parser = re.compile("<.*>")
+        self.table_name = os.getenv("SQLITE_DB_TABLE_NAME")
+        self.rss_parameters = json.loads(os.getenv("RSS_PARAMETERS"))
+        self.query_parameters = ", ".join(self.rss_parameters) + ", fetch_datetime"
+        self.query_length = ", ".join(["?" for _ in range(len(self.rss_parameters)+1)])
 
 
     """
@@ -147,9 +154,11 @@ class SQLite_handler():
             If so, add them to the SQLite database table and remove them from the buffer.
     """
     def update_SQLite(self):
-        con = sqlite3.connect("rss.db")
+        con = sqlite3.connect(os.getenv("SQLITE_DB_NAME"))
         self.db_cursor = con.cursor()
-        self.db_cursor.execute("CREATE TABLE IF NOT EXISTS rss(title text, summary text, link text, fetch_datetime text, UNIQUE(title, summary, link, fetch_datetime))")
+        parameters = "(" + " text, ".join(self.rss_parameters) + " text, fetch_datetime text, " + "UNIQUE(" + ",".join(self.rss_parameters) + ",fetch_datetime))"
+        self.db_cursor.execute(f"CREATE TABLE IF NOT EXISTS {self.table_name}{parameters}")
+        #self.db_cursor.execute(f"CREATE TABLE IF NOT EXISTS {self.table_name}(title text, summary text, link text, fetch_datetime text, UNIQUE(title, summary, link, fetch_datetime))")
         while(True):
             entry = q.get()
             self.add_SQLite_entry(entry)
@@ -168,7 +177,9 @@ class SQLite_handler():
         summary = entry["summary"]
         link = entry["link"]
         date = entry["fetch_datetime"]
-        command = f"INSERT OR IGNORE INTO rss (title, summary, link, fetch_datetime) VALUES(?, ?, ?, ?)"
+        print(self.query_parameters)
+        print(self.query_length)
+        command = f"INSERT OR IGNORE INTO {self.table_name} ({self.query_parameters}) VALUES({self.query_length})"
         self.db_cursor.execute(command, (title, summary, link, date))
         self.db_cursor.connection.commit()
 
