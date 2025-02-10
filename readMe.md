@@ -9,7 +9,7 @@ forwarding them to the webserver.
 
 SQLite <-> Flask <-> Gunicorn <-> NGINX <-> DNS <-> Client
 
-## Requirements
+## Architecture requirements/dependencies
 
 1.  The server requires a certificate, which is to be signed.
     This is best done using certbot through NGINX.
