@@ -28,20 +28,6 @@ table_name = os.getenv("SQLITE_DB_TABLE_NAME")
 live_rss = []
 
 """
-@method Function is run as a separate thread, continously fetches new
-        RSS feeds from the SQLite database.
-"""
-def update_live_rss():
-    global live_rss, table_name
-    update_time = int(os.getenv("FLASK_LIVE_RSS_UPDATE_TIME"))
-
-    while(True):
-        result = run_query(query=f"SELECT * FROM {table_name} WHERE fetch_datetime > strftime('%Y/%m/%d %H:%M:%S', 'now', '-4 hour')")
-        live_rss = parse_results(result=result)
-
-        time.sleep(update_time)
-
-"""
 @method Given a list of results of the SQLite database, parse the results into a 
         familiar format (dict/json) which can be returned to the client.
 
@@ -70,15 +56,6 @@ def run_query(query: str, params=()):
     rows = cursor.fetchall()
     con.close()
     return rows
-
-"""
-@method If a client requests the sub-URL /live, return the specified html template.
-
-@return Returns the template live.html
-"""
-@app.route("/live")
-def live():
-    return render_template('live.html')
 
 """
 @method If a client requests the sub-URL /get_rss, it means they want the live RSS data.
