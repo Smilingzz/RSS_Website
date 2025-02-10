@@ -177,8 +177,8 @@ class SQLite_handler():
         summary = entry["summary"]
         link = entry["link"]
         date = entry["fetch_datetime"]
-        print(self.query_parameters)
-        print(self.query_length)
+        #print(self.query_parameters)
+        #print(self.query_length)
         command = f"INSERT OR IGNORE INTO {self.table_name} ({self.query_parameters}) VALUES({self.query_length})"
         self.db_cursor.execute(command, (title, summary, link, date))
         self.db_cursor.connection.commit()
