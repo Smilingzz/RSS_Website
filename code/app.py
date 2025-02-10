@@ -23,10 +23,6 @@ max_results = int(os.getenv("FLASK_MAX_RESULTS"))
 rss_parameters = json.loads(os.getenv("RSS_PARAMETERS"))
 table_name = os.getenv("SQLITE_DB_TABLE_NAME")
 
-# This datastructure (list) holds the most recent RSS feeds. This is used to display 
-# "live" RSS data to clients.
-live_rss = []
-
 """
 @method Given a list of results of the SQLite database, parse the results into a 
         familiar format (dict/json) which can be returned to the client.
@@ -56,18 +52,6 @@ def run_query(query: str, params=()):
     rows = cursor.fetchall()
     con.close()
     return rows
-
-"""
-@method If a client requests the sub-URL /get_rss, it means they want the live RSS data.
-
-@return Returns the live RSS data as a JSON object.
-"""
-@app.route("/get_rss")
-def get_rss():
-    global live_rss
-    test = [{"title": "Test 1", "summary": "This is the first test!", "link": "null", "fetch_datetime": datetime.now().strftime("%Y/%m/%d %H:%M:%S")},
-     {"title": "Test 2", "summary": "This is the second test!", "link": "null", "fetch_datetime": (datetime.now() - timedelta(minutes=10)).strftime("%Y/%m/%d %H:%M:%S")}]
-    return test
 
 """
 @method 
@@ -104,7 +88,3 @@ def index():
     # Flask uses templates to render html.
     # Ref: https://flask.palletsprojects.com/en/stable/quickstart/#rendering-templates
     return render_template('index.html', results=parse_results(result=result))
-
-# We want the webserver to know of all recent live RSS feeds, start this as a separate thread.
-t0 = threading.Thread(target=update_live_rss)
-t0.start()
