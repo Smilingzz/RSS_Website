@@ -18,7 +18,7 @@ import json
 app = Flask(__name__)
 
 # Great functionality that allows one to have configurations in a central place.
-load_dotenv
+load_dotenv()
 max_results = int(os.getenv("FLASK_MAX_RESULTS"))
 rss_parameters = json.loads(os.getenv("RSS_PARAMETERS"))
 table_name = os.getenv("SQLITE_DB_TABLE_NAME")

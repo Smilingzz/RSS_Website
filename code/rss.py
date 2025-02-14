@@ -182,5 +182,6 @@ class SQLite_handler():
         command = f"INSERT OR IGNORE INTO {self.table_name} ({self.query_parameters}) VALUES({self.query_length})"
         self.db_cursor.execute(command, (title, summary, link, date))
         self.db_cursor.connection.commit()
+        print("Added new entry:\n",title, summary, date)
 
 main()
