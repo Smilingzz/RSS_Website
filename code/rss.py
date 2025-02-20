@@ -1,6 +1,6 @@
 """
 Author: Alexander Söderhäll
-Date: 2025-01-14
+Date:   2025-02-17
 
 This task is the so called "gesällprov" in course IPROG at SU. 
 
@@ -12,7 +12,6 @@ will answer accordingly.
 The program uses multi-threading and databases, learned in the course.
 """
 import os
-import subprocess
 from dotenv import load_dotenv
 import time
 import feedparser
@@ -21,7 +20,6 @@ import threading
 import queue
 import json
 import datetime
-from flask import Flask, render_template, request
 import regex as re
 
 # Global variables

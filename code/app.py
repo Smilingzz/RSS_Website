@@ -1,17 +1,14 @@
 """
 Author: Alexander Söderhäll
-Date:   17/01/2025
+Date:   2025-02-17
 
-        This class is responsible for the webservers backend logic.
+        This class is responsible for the webservers backend logic and producing the client html 
+        that is used to search for data in the SQLite database.
 """
 from flask import Flask, render_template, request
-from flask_socketio import send, emit, SocketIO
 import sqlite3
 from dotenv import load_dotenv
 import os
-from datetime import datetime, timedelta
-import threading
-import time
 import json
 
 
@@ -41,7 +38,7 @@ def parse_results(result: list):
 @method Runs a given query on the SQLite database.
 
 @param  query: A prepared string which should be run on the SQLite database.
-@param  params: Any special parameters that should be used.
+@param  params: Any special parameters that should be used, none by default.
 
 @return Returns the query.
 """
@@ -54,7 +51,8 @@ def run_query(query: str, params=()):
     return rows
 
 """
-@method 
+@method Queries the SQLite database for a search word that the client has transmitted to the server.
+        Returns all matching entries inside the SQLite database to the client.
 
 @param  search: The search string that the user has entered.
 
