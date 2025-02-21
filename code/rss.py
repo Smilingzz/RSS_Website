@@ -1,5 +1,4 @@
 """
-Author: Alexander Söderhäll
 Date:   2025-02-17
 
 This task is the so called "gesällprov" in course IPROG at SU. 
