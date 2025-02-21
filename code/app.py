@@ -1,5 +1,4 @@
 """
-Author: Alexander Söderhäll
 Date:   2025-02-17
 
         This class is responsible for the webservers backend logic and producing the client html 
